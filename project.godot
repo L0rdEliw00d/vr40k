@@ -1,0 +1,9 @@
+[project]
+title="warfront"
+version="1.0"
+author="Elijah Harmon"
+description="A multiplayer card game with character customization"
+language="gdscript"
+scene/main.tscn
+[dependencies]
+gdscript = "3.0"
