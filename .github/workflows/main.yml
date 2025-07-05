@@ -16,5 +16,5 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.14.15
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "your-app-name"
-          heroku_email: "your@email.com"
+          heroku_app_name: "vrv40k"
+          heroku_email: "mr.minecraft1029384756@gmail.com"
