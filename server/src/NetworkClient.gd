@@ -4,7 +4,7 @@ var http_client = HTTPClient.new()
 
 func _ready():
     var error = http_client.connect_to_host(
-        "your-app-name.herokuapp.com",
+        "vr40k.herokuapp.com",
         443,
         true
     )
