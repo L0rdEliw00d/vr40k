@@ -1,19 +1,18 @@
-# Godot files
-*.import
-*.original
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
 
-# Server files
+# Dependency directories
 node_modules/
+jspm_packages/
+
+# Environment variables
 .env
+.env.test
 
-# OS files
+# Optional files
 .DS_Store
-Thumbs.db
-
-# IDE files
-.vscode/
-.idea/
-
-# Build files
-build/
-export/
