@@ -65,6 +65,4 @@ app.post('/api/save_character', (req, res) => {
 
 // --- Start Server ---
 // Start the server and make it listen for incoming connections on the specified port.
-app.listen(PORT, () => {
-  console.log(`Server is running and listening on port ${PORT}`);
-});
+app.listen(process.env.PORT || 5000)
