@@ -1,28 +1,5 @@
 {
-  "name": "mrmin",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "engines": {
-    "node": "22.x"
-  },
-  "scripts": {
-	"dev": "react-scripts start",
-	"start": "serve -s build",
-	"build": "react-scripts build",
-	"test": "react-scripts test --env=jsdom",
-	"eject": "react-scripts eject",
-	"heroku-postbuild": "npm run build"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.0.1",
-    "express": "^5.1.0",
     "serve": "^14.2.4"
   }
 }
