@@ -44,22 +44,11 @@ app.get('/api/leaderboard', (req, res) => {
   res.json(leaderboardData);
 });
 
-// An example POST route that matches the one in your Godot script.
-// It receives data, logs it, and sends back a success confirmation.
 app.post('/api/save_character', (req, res) => {
-  // The parsed JSON data from the Godot client is available in 'req.body'.
   const characterData = req.body;
-  
   console.log("Received a POST request to /api/save_character with data:");
   console.log(characterData);
-  
-  // Here, you would typically save this data to a database (like PostgreSQL or MongoDB).
-  // For this example, we'll just send back a success message.
-  res.status(200).json({ 
-    status: "success", 
-    message: "Character data received successfully.",
-    receivedData: characterData 
-  });
+  res.status(200).json({ status: "success", message: "Character data received successfully." });
 });
 
 
