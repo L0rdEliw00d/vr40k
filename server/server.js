@@ -14,7 +14,7 @@ const app = express();
 // Heroku provides a dynamic port through an environment variable. If we are
 // running locally, we can use a default port like 3000.
 const PORT = process.env.PORT || 5000;
-
+res.send('Starting the funny');
 // --- Middleware ---
 // Use the CORS middleware to allow all cross-origin requests.
 app.use(cors());
