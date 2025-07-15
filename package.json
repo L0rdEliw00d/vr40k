@@ -1,11 +1,19 @@
 {
-  "engines": {
-    "node": "22.x"
-  },
-  "dependencies": {
-    "serve": "^14.2.4"
-  },
+  "name": "godot-heroku-server",
+  "version": "1.0.0",
+  "description": "A simple Node.js server for a Godot game, ready for Heroku.",
+  "main": "server.js",
   "scripts": {
-    "start": "serve -s build"
-}
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
 }
