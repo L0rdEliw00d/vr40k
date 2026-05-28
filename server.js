@@ -36,7 +36,7 @@ app.get('/api/characters', async (req, res) => {
     const result = await pool.query('SELECT * FROM characters;');
     res.status(200).json(result.rows);
   } catch (err) {
-    console.error('Error executing query', err.stack);
+    console.error('Error fetching characters:', err.message);
     res.status(500).json({ 
       status: "error", 
       message: "Failed to fetch character data." 
@@ -45,15 +45,12 @@ app.get('/api/characters', async (req, res) => {
 });
 
 // --- MODIFIED SAVE ROUTE ---
-// Route to handle saving character data to the database.
 app.post('/api/save_character', async (req, res) => {
-  // Added 'wounds' to the destructured properties
   const { name, username, bio, media_choice_index, faction, rank, unit_name, wounds } = req.body;
   
-  console.log("Received a POST request to /api/save_character with data:");
-  console.log(req.body);
+  console.log("Received a POST request to /api/save_character with data:", req.body);
 
-  // The SQL query now includes the 'wounds' column for new entries
+  // Added 'wounds = EXCLUDED.wounds' to ensure updates actually save health changes
   const queryText = `
     INSERT INTO characters (name, username, bio, media_choice_index, faction, rank, unit_name, wounds)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -64,40 +61,39 @@ app.post('/api/save_character', async (req, res) => {
       faction = EXCLUDED.faction,
       rank = EXCLUDED.rank,
       unit_name = EXCLUDED.unit_name,
+      wounds = EXCLUDED.wounds, 
       updated_at = CURRENT_TIMESTAMP
     RETURNING *;
   `;
 
-  // The values array now includes the 'wounds' value with a default
+  // Swapped || for ?? to prevent 0 from being overwritten by defaults
   const values = [
-    name || '',
-    username || '',
-    bio || '',
-    media_choice_index || 0,
-    faction || '',
-    rank || '',
-    unit_name || '',
-    // If 'wounds' is provided in the request, use it. Otherwise, default to 3.
-    wounds || 3 
+    name ?? '',
+    username ?? '',
+    bio ?? '',
+    media_choice_index ?? 0,
+    faction ?? '',
+    rank ?? '',
+    unit_name ?? '',
+    wounds ?? 3 
   ];
 
   try {
     const result = await pool.query(queryText, values);
-    console.log('Database operation successful:', result.rows[0]);
+    console.log('Database operation successful:', result.rows[0].name);
     res.status(200).json({ 
       status: "success", 
       message: "Character data saved to database successfully.",
       data: result.rows[0] 
     });
   } catch (err) {
-    console.error('Error executing query', err.stack);
+    console.error('Error executing query:', err.message); // err.message is cleaner for logs than err.stack unless deep debugging
     res.status(500).json({ 
       status: "error", 
       message: "Failed to save character data to database." 
     });
   }
 });
-
 
 // --- Start Server ---
 app.listen(PORT, () => {
