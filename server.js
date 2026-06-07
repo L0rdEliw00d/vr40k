@@ -44,6 +44,42 @@ app.get('/api/characters', async (req, res) => {
   }
 });
 
+// --- NEW GET ROUTE: Fetch by name and username ---
+app.get('/api/get_character_by_name', async (req, res) => {
+  console.log("Received a GET request for /api/get_character_by_name", req.query);
+  
+  // Extract parameters from the query string (e.g., ?name=Bob&username=Bob123)
+  const { name, username } = req.query;
+
+  if (!name || !username) {
+    return res.status(400).json({ 
+      status: "error", 
+      message: "Name and username are required." 
+    });
+  }
+
+  try {
+    const queryText = 'SELECT * FROM characters WHERE name = $1 AND username = $2 LIMIT 1;';
+    const result = await pool.query(queryText, [name, username]);
+
+    if (result.rows.length > 0) {
+      // Send the raw row back so Godot can easily read data["id"]
+      res.status(200).json(result.rows[0]);
+    } else {
+      res.status(404).json({ 
+        status: "error", 
+        message: "Character not found." 
+      });
+    }
+  } catch (err) {
+    console.error('Error fetching character by name:', err.message);
+    res.status(500).json({ 
+      status: "error", 
+      message: "Failed to fetch character." 
+    });
+  }
+});
+
 // --- MODIFIED SAVE ROUTE ---
 app.post('/api/save_character', async (req, res) => {
   const { name, username, bio, media_choice_index, faction, rank, unit_name, wounds } = req.body;
@@ -81,13 +117,12 @@ app.post('/api/save_character', async (req, res) => {
   try {
     const result = await pool.query(queryText, values);
     console.log('Database operation successful:', result.rows[0].name);
-    res.status(200).json({ 
-      status: "success", 
-      message: "Character data saved to database successfully.",
-      data: result.rows[0] 
-    });
+    
+    // MODIFIED: Return just the raw database row so Godot can parse `response_data["id"]` directly
+    res.status(200).json(result.rows[0]);
+    
   } catch (err) {
-    console.error('Error executing query:', err.message); // err.message is cleaner for logs than err.stack unless deep debugging
+    console.error('Error executing query:', err.message);
     res.status(500).json({ 
       status: "error", 
       message: "Failed to save character data to database." 
