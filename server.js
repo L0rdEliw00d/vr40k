@@ -107,27 +107,31 @@ app.post('/api/save_character', async (req, res) => {
 app.post('/api/log_battle', async (req, res) => {
   console.log("Received a POST request to /api/log_battle with data:", req.body);
 
-  const { planet, battle_type, factions_involved, participants } = req.body;
+  // Added winning_faction and lore here
+  const { planet, battle_type, factions_involved, winning_faction, lore, participants } = req.body;
 
-  // Basic validation to make sure Godot sent the required data
-  if (!planet || !battle_type || !factions_involved || !participants) {
+  // Updated validation to require winning_faction
+  if (!planet || !battle_type || !factions_involved || !winning_faction || !participants) {
     return res.status(400).json({ 
       status: "error", 
       message: "Missing required battle data." 
     });
   }
 
+  // Updated query to include the two new columns
   const queryText = `
-    INSERT INTO battles (planet, battle_type, factions_involved, participants)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO battles (planet, battle_type, factions_involved, winning_faction, lore, participants)
+    VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *;
   `;
 
-  // We pass the arrays/objects directly; the 'pg' library handles converting them for Postgres
+  // We use "lore ?? ''" just in case you send a battle without a story, it defaults to empty text
   const values = [
     planet,
     battle_type,
     factions_involved,
+    winning_faction,
+    lore ?? '', 
     participants 
   ];
 
@@ -135,35 +139,12 @@ app.post('/api/log_battle', async (req, res) => {
     const result = await pool.query(queryText, values);
     console.log('Battle successfully logged on planet:', result.rows[0].planet);
     
-    // Return the raw row so Godot can confirm the save and read the new battle 'id'
     res.status(200).json(result.rows[0]);
   } catch (err) {
     console.error('Error logging battle:', err.message);
     res.status(500).json({ 
       status: "error", 
       message: "Failed to log battle to database." 
-    });
-  }
-});
-
-// GET route to fetch recent battles (Useful for a global history board in-game)
-app.get('/api/battles', async (req, res) => {
-  console.log("Received a GET request for /api/battles");
-  
-  // You can use req.query to limit how many battles you pull, defaulting to 50
-  const limit = parseInt(req.query.limit) || 50;
-
-  try {
-    // Fetches the battles ordered by the newest first
-    const queryText = 'SELECT * FROM battles ORDER BY created_at DESC LIMIT $1;';
-    const result = await pool.query(queryText, [limit]);
-    
-    res.status(200).json(result.rows);
-  } catch (err) {
-    console.error('Error fetching battles:', err.message);
-    res.status(500).json({ 
-      status: "error", 
-      message: "Failed to fetch battle history." 
     });
   }
 });
